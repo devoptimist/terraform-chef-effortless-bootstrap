@@ -1,5 +1,5 @@
 # Overview
-This terraform module will use a chef effortless habitat package to bootstrap a system
+This module will use a chef `Effortless Infra` package to bootstrap a system. The name of the effortless package to run can be passed in as a variable.
 
 #### Supported platform families:
  * Debian
