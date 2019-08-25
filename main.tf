@@ -3,7 +3,9 @@ locals {
   dna             = var.config
   dna_extra       = var.config_extra
   cmd             = var.system_type == "linux" ? "bash" : "powershell.exe"
-  tmp_path        = var.system_type == "linux" ? "${var.linux_tmp_path}/${var.effortless_pkg}" : "${var.windows_tmp_path}\\${var.effortless_pkg}"
+  mkdir           = var.system_type == "linux" ? "mkdir -p" : "New-Item -ItemType Directory -Force -Path"
+  tmp_dir_name    = split("/", var.effortless_pkg)[1]
+  tmp_path        = var.system_type == "linux" ? "${var.linux_tmp_path}/${local.tmp_dir_name}" : "${var.windows_tmp_path}\\${local.tmp_dir_name}"
   installer_name  = var.system_type == "linux" ? var.linux_installer_name : var.windows_installer_name
   installer_cmd   = var.system_type == "linux" ? "${local.tmp_path}/${var.linux_installer_name}" : "Invoke-Expression ${local.tmp_path}/${var.windows_installer_name} > ${local.tmp_path}/hab_installer.log 2>&1"
   hab_install_url = var.system_type == "linux" ? var.hab_linux_install_url : var.hab_windows_install_url
@@ -34,6 +36,12 @@ resource "null_resource" "effortless_bootstrap" {
     password    = length(compact(concat([var.user_pass], var.user_passes))) > 0 ? element(compact(concat([var.user_pass], var.user_passes)), count.index) : null
     private_key = length(compact(concat([var.user_private_key], var.user_private_keys))) > 0 ? file(element(compact(concat([var.user_private_key], var.user_private_keys)), count.index)) : null
     host        = var.ips[count.index]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "${local.mkdir} ${local.tmp_path}"
+    ]
   }
 
   provisioner "file" {
