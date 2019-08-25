@@ -3,7 +3,7 @@ locals {
   dna             = var.config
   dna_extra       = var.config_extra
   cmd             = var.system_type == "linux" ? "bash" : "powershell.exe"
-  tmp_path        = var.system_type == "linux" ? var.linux_tmp_path : var.windows_tmp_path
+  tmp_path        = var.system_type == "linux" ? "${var.linux_tmp_path}/${var.effortless_pkg}" : "${var.windows_tmp_path}\\${var.effortless_pkg}"
   installer_name  = var.system_type == "linux" ? var.linux_installer_name : var.windows_installer_name
   installer_cmd   = var.system_type == "linux" ? "${local.tmp_path}/${var.linux_installer_name}" : "Invoke-Expression ${local.tmp_path}/${var.windows_installer_name} > ${local.tmp_path}/hab_installer.log 2>&1"
   hab_install_url = var.system_type == "linux" ? var.hab_linux_install_url : var.hab_windows_install_url
