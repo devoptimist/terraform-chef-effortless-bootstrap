@@ -3,7 +3,7 @@ locals {
   dna             = var.config
   dna_extra       = var.config_extra
   cmd             = var.system_type == "linux" ? "bash" : "powershell.exe"
-  mkdir           = var.system_type == "linux" ? "mkdir -p" : "New-Item -ItemType Directory -Force -Path"
+  mkdir           = var.system_type == "linux" ? "mkdir -p" : "${local.cmd} New-Item -ItemType Directory -Force -Path"
   tmp_dir_name    = split("/", var.effortless_pkg)[1]
   tmp_path        = var.system_type == "linux" ? "${var.linux_tmp_path}/${local.tmp_dir_name}" : "${var.windows_tmp_path}\\${local.tmp_dir_name}"
   installer_name  = var.system_type == "linux" ? var.linux_installer_name : var.windows_installer_name
@@ -72,7 +72,7 @@ resource "null_resource" "effortless_bootstrap" {
 }
 
 resource "random_string" "module_hook" {
-  depends_on       = ["null_resource.effortless_bootstrap"]
+  depends_on       = [null_resource.effortless_bootstrap]
   count            = local.instance_count
   length           = 16
   special          = true
