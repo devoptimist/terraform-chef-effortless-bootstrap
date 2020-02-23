@@ -38,11 +38,12 @@ function run_effortless_package {
     cat ${tmp_path}/dna_base.json > ${tmp_path}/dna.json
   fi
 
-  service_name=$(echo "${effortless_pkg}" | awk -F'/' '{print $2}')
-  service_dir=/hab/svc/$${service_name}/data/nodes
+  pkg_name=$(echo "${effortless_pkg}" | awk -F'/' '{print $2}')
+  pkg_origin=$(echo "${effortless_pkg}" | awk -F'/' '{print $1}')
+  service_dir=/hab/svc/$${pkg_name}/data/nodes
 
   pushd $(hab pkg path ${effortless_pkg})
-    sudo $(hab pkg path $(grep "chef/chef-client" TDEPS))/bin/chef-client -z -j ${tmp_path}/dna.json
+  sudo hab pkg exec $pkg_origin/$pkg_name chef-client -z -j ${tmp_path}/dna.json --chef-license accept-no-persist
 %{ if clear_node_data }
     sudo rm -rf $${service_dir}
 %{ endif  }
@@ -122,11 +123,14 @@ function run_effortless_package {
   }
 
   Push-Location $(hab pkg path ${effortless_pkg})
-    Invoke-Expression "$(hab pkg path (Select-String -Pattern 'chef-client' -Path .\TDEPS | Out-String).Trim().split(':')[2])\bin\chef-client.bat -j ${tmp_path}\dna.json -z *>&1 > ${tmp_path}/effortless_run.log"
-    $service_name = "${effortless_pkg}".split("/")[1]
+
+  $pkg_name = "${effortless_pkg}".split("/")[1]
+  $pkg_origin = "${effortless_pkg}".split("/")[0]
+  Invoke-Expression "hab pkg exec $pkg_origin/$pkg_name chef-client -z -j ${tmp_path}\dna.json --chef-license accept-no-persist *>&1 > ${tmp_path}/effortless_run.log"
+
 %{ if clear_node_data }
-    if(Test-Path "C:\hab\svc\$${service_name}\data\nodes") {
-      Remove-Item -LiteralPath "C:\hab\svc\$service_name\data\nodes" -Force -Recurse
+    if(Test-Path "C:\hab\svc\$${pkg_name}\data\nodes") {
+      Remove-Item -LiteralPath "C:\hab\svc\$pkg_name\data\nodes" -Force -Recurse
     }
 %{ endif }
   Pop-Location
