@@ -17,7 +17,8 @@ locals {
     tmp_path        = local.tmp_path,
     jq_windows_url  = var.jq_windows_url,
     jq_linux_url    = var.jq_linux_url,
-    clear_node_data = var.clear_node_data
+    clear_node_data = var.clear_node_data,
+    ssl_cert_file   = var.ssl_cert_file
   })
 }
 
