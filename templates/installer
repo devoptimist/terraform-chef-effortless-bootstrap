@@ -43,6 +43,9 @@ function run_effortless_package {
   service_dir=/hab/svc/$${pkg_name}/data/nodes
 
   pushd $(hab pkg path ${effortless_pkg})
+  %{ if ssl_cert_file != "" }
+  export SSL_CERT_FILE=${ssl_cert_file}
+  %{ endif }
   sudo hab pkg exec $pkg_origin/$pkg_name chef-client -z -j ${tmp_path}/dna.json -c config/bootstrap-config.rb --chef-license accept-no-persist
 %{ if clear_node_data }
     sudo rm -rf $${service_dir}
@@ -126,6 +129,9 @@ function run_effortless_package {
 
   $pkg_name = "${effortless_pkg}".split("/")[1]
   $pkg_origin = "${effortless_pkg}".split("/")[0]
+  %{ if ssl_cert_file != "" }
+  set SSL_CERT_FILE=${ssl_cert_file}
+  %{ endif }
   Invoke-Expression "hab pkg exec $pkg_origin/$pkg_name chef-client -z -j ${tmp_path}\dna.json --chef-license accept-no-persist -c config/bootstrap-config.rb *>&1 > ${tmp_path}/effortless_run.log"
 
 %{ if clear_node_data }

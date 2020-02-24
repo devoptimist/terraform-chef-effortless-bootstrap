@@ -123,6 +123,12 @@ variable "clear_node_data" {
   default     = false
 }
 
+variable "ssl_cert_file" {
+  description = "If needed the path to an ssl cert file to use for the chef client bootstrap run"
+  type        = string
+  default     = ""
+}
+
 variable "config" {
   description = "A list of of maps containing attributes for the effortless package. Converted to json and passed to the effortless run via a -j flag"
   type        = list 
