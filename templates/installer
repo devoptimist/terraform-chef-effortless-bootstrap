@@ -20,7 +20,7 @@ function install_jq {
 }
 
 function install_hab {
-  if [[ ! -d /hab ]]; then
+  if [[ ! -d /hab/pkgs/core/hab ]]; then
     curl -L -o ${tmp_path}/url_installer.sh ${hab_install_url} && sudo bash ${tmp_path}/url_installer.sh -v ${hab_version}
   fi
 }
