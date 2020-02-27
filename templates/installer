@@ -45,6 +45,7 @@ function run_effortless_package {
   pushd $(hab pkg path ${effortless_pkg})
   %{ if ssl_cert_file != "" }
   export SSL_CERT_FILE=${ssl_cert_file}
+  cp ${ssl_cert_file} /hab/cache/ssl/
   %{ endif }
   sudo -E hab pkg exec $pkg_origin/$pkg_name chef-client -z -j ${tmp_path}/dna.json -c config/bootstrap-config.rb --chef-license accept-no-persist
 %{ if clear_node_data }
