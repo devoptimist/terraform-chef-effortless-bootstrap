@@ -135,14 +135,8 @@ variable "config" {
   default     = [] 
 }
 
-variable "config_extra" {
-  description = "A list of of maps containing attributes for the effortless package. Just before the effortless run this config is merged with the var.config data. The difference is changes in this variable will not trigger the resource to run"
-  type        = list
+variable "module_depends_on" {
+  description = "List of modules or resources this module depends on"
+  type        = list(any)
   default     = []
-}
-
-variable "hook_data" {
-  description = "This variable is set if we need to enfroce the order in which this module is run. Use a string output of another module as the value for hook_data to ensure this module runs in order"
-  type        = string
-  default     = ""
 }

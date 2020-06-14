@@ -32,11 +32,6 @@ function install_effortless_package {
 
 function run_effortless_package {
   export PATH=$PATH:${tmp_path}/bin
-  if [[ -f ${tmp_path}/dna_extra.json ]]; then
-    jq -s '.[0] * .[1]' ${tmp_path}/dna_base.json ${tmp_path}/dna_extra.json > ${tmp_path}/dna.json
-  else
-    cat ${tmp_path}/dna_base.json > ${tmp_path}/dna.json
-  fi
 
   pkg_name=$(echo "${effortless_pkg}" | awk -F'/' '{print $2}')
   pkg_origin=$(echo "${effortless_pkg}" | awk -F'/' '{print $1}')
@@ -119,12 +114,6 @@ function install_effortless_package {
 function run_effortless_package {
   $env:Path += ";C:\habitat\"
   $env:Path += ";${tmp_path}\bin"
-  if(Test-Path C:\effortless_bootstrap\dna_extra.json) {
-    jq -s '.[0] * .[1]' C:\effortless_bootstrap\dna_base.json C:\effortless_bootstrap\dna_extra.json > C:\effortless_bootstrap\tmp_dna.json
-    [System.IO.File]::WriteAllLines("${tmp_path}\dna.json", (Get-Content -Path ${tmp_path}\tmp_dna.json))
-  }else {
-    [System.IO.File]::WriteAllLines("${tmp_path}\dna.json", (Get-Content -Path ${tmp_path}\dna_base.json))
-  }
 
   Push-Location $(hab pkg path ${effortless_pkg})
 

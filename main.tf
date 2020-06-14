@@ -1,7 +1,6 @@
 locals {
   instance_count  = var.instance_count # length(var.ips)
   dna             = var.config
-  dna_extra       = var.config_extra
   cmd             = var.system_type == "linux" ? "bash" : "powershell.exe"
   mkdir           = var.system_type == "linux" ? "mkdir -p" : "${local.cmd} New-Item -ItemType Directory -Force -Path"
   tmp_dir_name    = split("/", var.effortless_pkg)[1]
@@ -51,18 +50,8 @@ resource "null_resource" "effortless_bootstrap" {
   }
 
   provisioner "file" {
-    content     = var.hook_data != "" ? var.hook_data : "no_hook_data_set"
-    destination = "${local.tmp_path}/hook_data.json"
-  }
-
-  provisioner "file" {
-    content     = length(local.dna_extra) != 0 ? jsonencode(local.dna_extra[count.index]) : jsonencode({"extra" = "data"})
-    destination = "${local.tmp_path}/dna_extra.json"
-  }
-
-  provisioner "file" {
      content     = length(var.config) != 0 ? jsonencode(var.config[count.index]) : jsonencode({"base" = "data"})
-    destination = "${local.tmp_path}/dna_base.json"
+    destination = "${local.tmp_path}/dna.json"
   }
 
   provisioner "remote-exec" {
@@ -70,18 +59,13 @@ resource "null_resource" "effortless_bootstrap" {
       "${local.cmd} ${local.installer_cmd}"
     ]
   }
+
+  depends_on = [null_resource.module_depends_on]
 }
 
-resource "random_string" "module_hook" {
-  depends_on       = [null_resource.effortless_bootstrap]
-  count            = local.instance_count
-  length           = 16
-  special          = true
-  override_special = "/@\" "
-}
+resource "null_resource" "module_depends_on" {
 
-data "null_data_source" "module_hook" {
-  inputs = {
-    data = jsonencode(random_string.module_hook[*].result)
+  triggers = {
+    value = length(var.module_depends_on)
   }
 }
