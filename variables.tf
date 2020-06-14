@@ -95,7 +95,7 @@ variable "jq_linux_url" {
 variable "hab_version" {
   description = "The version of habitat to install"
   type        = string
-  default     = "0.83.0"
+  default     = "1.6.39"
 }
 
 variable "hab_linux_install_url" {

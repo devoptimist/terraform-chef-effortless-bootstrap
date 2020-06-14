@@ -13,7 +13,7 @@ This module will use a chef `Effortless Infra` package to bootstrap a system. Th
 
 module "chef_habitat_install" {
   source               = "srb3/effortless-bootstrap/chef"
-  version              = "0.0.15"
+  version              = "0.0.16"
   ips                  = ["172.16.0.23"]
   instance_count       = 1
   ssh_user_name        = "ec2-user"
