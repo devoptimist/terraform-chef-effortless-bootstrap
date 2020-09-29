@@ -1,13 +1,8 @@
 ############ connection details #################
 
-variable "ips" {
-  description = "A list of ip addresses where we will install hab and run services"
-  type        = list
-}
-
-variable "instance_count" {
-  description = "The number of instances that will have chef-solo run on them"
-  type        = number
+variable "ip" {
+  description = "The ip address to install hab and run services"
+  type        = string
 }
 
 variable "user_name" {
@@ -16,34 +11,16 @@ variable "user_name" {
   default     = ""
 }
 
-variable "user_names" {
-  description = "A list of ssh or winrm user names used to access the ip addresses provided"
-  type        = list(string)
-  default     = []
-}
-
 variable "user_pass" {
   description = "The ssh or winrm user password used to access the ip addresses (either user_pass or user_private_key needs to be set)"
   type        = string
   default     = ""
 }
 
-variable "user_passes" {
-  description = "A list of ssh or winrm user passwords used to access the ip addresses (either user_pass or user_private_key needs to be set)"
-  type        = list(string)
-  default     = []
-}
-
 variable "user_private_key" {
   description = "The user key used to access the ip addresses (either user_pass or user_private_key needs to be set)"
   type        = string
   default     = ""
-}
-
-variable "user_private_keys" {
-  description = "A list of user keys used to access the ip addresses (either user_pass/s or user_private_key/s needs to be set)"
-  type        = list(string)
-  default     = []
 }
 
 ################# misc ############################
@@ -129,14 +106,20 @@ variable "ssl_cert_file" {
   default     = ""
 }
 
-variable "config" {
-  description = "A list of of maps containing attributes for the effortless package. Converted to json and passed to the effortless run via a -j flag"
-  type        = list 
-  default     = [] 
+variable "proxy_string" {
+  description = "If needed set a proxy server details in this variable"
+  type        = string
+  default     = ""
 }
 
-variable "module_depends_on" {
-  description = "List of modules or resources this module depends on"
-  type        = list(any)
-  default     = []
+variable "no_proxy_string" {
+  description = "If needed set the no_proxy details in this variable"
+  type        = string
+  default     = ""
+}
+
+variable "config" {
+  description = "A map containing attributes for the effortless package. Converted to json and passed to the effortless run via a -j flag"
+  type        = map
+  default     = {}
 }

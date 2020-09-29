@@ -12,22 +12,22 @@ function install_jq {
   jq_path="${tmp_path}/bin/jq"
   if [[ ! -f "$${jq_path}" ]]; then
     if hash curl; then
-      sudo curl -L -o $${jq_path} ${jq_linux_url} && sudo chmod 755 $${jq_path}
+      sudo -E curl -L -o $${jq_path} ${jq_linux_url} && sudo chmod 755 $${jq_path}
     else
-      sudo wget -O $${jq_path} ${jq_linux_url} && sudo chmod 755 $${jq_path}
+      sudo -E wget -O $${jq_path} ${jq_linux_url} && sudo chmod 755 $${jq_path}
     fi
   fi
 }
 
 function install_hab {
   if [[ ! -d /hab/pkgs/core/hab ]]; then
-    curl -L -o ${tmp_path}/url_installer.sh ${hab_install_url} && sudo bash ${tmp_path}/url_installer.sh -v ${hab_version}
+    curl -L -o ${tmp_path}/url_installer.sh ${hab_install_url} && sudo -E bash ${tmp_path}/url_installer.sh -v ${hab_version}
   fi
 }
 
 function install_effortless_package {
   sudo hab license accept
-  sudo hab pkg install ${effortless_pkg}
+  sudo -E hab pkg install ${effortless_pkg}
 }
 
 function run_effortless_package {
@@ -38,6 +38,7 @@ function run_effortless_package {
   service_dir=/hab/svc/$${pkg_name}/data/nodes
 
   pushd $(hab pkg path ${effortless_pkg})
+
   %{ if ssl_cert_file != "" }
   export SSL_CERT_FILE=${ssl_cert_file}
   sudo cp $(dirname ${ssl_cert_file})/* /hab/cache/ssl/
@@ -49,6 +50,14 @@ function run_effortless_package {
   popd
 
 }
+
+%{ if proxy_string != "" }
+  export https_proxy=${proxy_string}
+  export http_proxy=${proxy_string}
+%{ endif }
+%{ if no_proxy_string != "" }
+  export no_proxy=${no_proxy_string}
+%{ endif }
 
 install_jq
 install_hab
@@ -132,6 +141,14 @@ function run_effortless_package {
 %{ endif }
   Pop-Location
 }
+
+%{ if proxy_string != "" }
+set https_proxy=${proxy_string}
+set http_proxy=${proxy_string}
+%{ endif }
+%{ if no_proxy_string != "" }
+set no_proxy=${no_proxy_string}
+%{ endif }
 
 install_jq
 install_hab

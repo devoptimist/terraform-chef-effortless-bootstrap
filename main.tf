@@ -1,5 +1,4 @@
 locals {
-  instance_count  = var.instance_count # length(var.ips)
   dna             = var.config
   cmd             = var.system_type == "linux" ? "bash" : "powershell.exe"
   mkdir           = var.system_type == "linux" ? "mkdir -p" : "${local.cmd} New-Item -ItemType Directory -Force -Path"
@@ -17,25 +16,26 @@ locals {
     jq_windows_url  = var.jq_windows_url,
     jq_linux_url    = var.jq_linux_url,
     clear_node_data = var.clear_node_data,
-    ssl_cert_file   = var.ssl_cert_file
+    ssl_cert_file   = var.ssl_cert_file,
+    proxy_string    = var.proxy_string,
+    no_proxy_string = var.no_proxy_string
   })
 }
 
 resource "null_resource" "effortless_bootstrap" {
-  count    = local.instance_count
 
   triggers = {
     data      = md5(jsonencode(local.dna))
-    ip        = md5(join(",", var.ips))
+    ip        = md5(var.ip)
     installer = md5(local.installer)
   }
 
   connection {
     type        = var.system_type == "windows" ? "winrm" : "ssh"
-    user        = element(compact(concat([var.user_name], var.user_names)), count.index)
-    password    = length(compact(concat([var.user_pass], var.user_passes))) > 0 ? element(compact(concat([var.user_pass], var.user_passes)), count.index) : null
-    private_key = length(compact(concat([var.user_private_key], var.user_private_keys))) > 0 ? file(element(compact(concat([var.user_private_key], var.user_private_keys)), count.index)) : null
-    host        = var.ips[count.index]
+    user        = var.user_name
+    password    = var.user_pass != "" ? var.user_pass : null
+    private_key = var.user_private_key != "" ? file(var.user_private_key) : null
+    host        = var.ip
   }
 
   provisioner "remote-exec" {
@@ -50,7 +50,7 @@ resource "null_resource" "effortless_bootstrap" {
   }
 
   provisioner "file" {
-     content     = length(var.config) != 0 ? jsonencode(var.config[count.index]) : jsonencode({"base" = "data"})
+     content     = length(var.config) != 0 ? jsonencode(var.config) : jsonencode({"base" = "data"})
     destination = "${local.tmp_path}/dna.json"
   }
 
@@ -60,12 +60,4 @@ resource "null_resource" "effortless_bootstrap" {
     ]
   }
 
-  depends_on = [null_resource.module_depends_on]
-}
-
-resource "null_resource" "module_depends_on" {
-
-  triggers = {
-    value = length(var.module_depends_on)
-  }
 }

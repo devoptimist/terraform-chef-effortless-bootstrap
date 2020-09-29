@@ -25,14 +25,10 @@ module "chef_habitat_install" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|----------|
-|ips|A list of ip addresses where the effortless package and habitat will be installed|list|[]|no|
-|instance_count|The number of instances being created|number|0|no|
+|ip|An ip address where the effortless package and habitat will be installed|list|[]|no|
 |user_name|The ssh or winrm user name used to access the ip addresses provided|string|""|no|
 |user_pass|The ssh or winrm user password used to access the ip addresses (either user_pass/es or user_private_key/s needs to be set)|string|""|no|
 |user_private_key|The ssh user key used to access the ip addresses provided (either user_pass/es or user_private_key/s needs to be set)|string|""|no|
-|user_names|A list of ssh or winrm user names used to access the ip addresses provided|list|[]|no|
-|user_passes|A list of ssh or winrm user passwords used to access the ip addresses (either user_pass/es or suser_private_key/s needs to be set)|list|[]|no|
-|user_private_keys|A list of ssh keys used to access the ip addresses (either user_pass/es or user_private_key/s needs to be set)|list|[]|no|
 |system_type|The system type linux or windows|string|linux|no|
 |linux_tmp_path|The location of a temp directory to store install scripts on|string|/var/tmp|no|
 |windows_tmp_path|The location of a temp directory to store install scripts on|string|$env:TEMP|no|
@@ -47,10 +43,3 @@ module "chef_habitat_install" {
 |clear_node_data|Should the node data be cleared after the effortless chef run|bool|false|no|
 |config|A list of of maps containing attributes for the effortless package. Converted to json and passed to the effortless run via a -j flag|list|[]|no|
 |config_extra|A list of of maps containing attributes for the effortless package. Just before the effortless run this config is merged with the var.config data. The difference is changes in this variable will not trigger the resource to run|list|[]|no|
-|hook_data|This variable is set if we need to enfroce the order in which this module is run. Use a string output of another module as the value for hook_data to ensure this module runs in order  |string|""|no|
-
-## Outputs
-
-| Name | Description | Type |
-|------|-------------|------|
-|module_hook|A list of random string outputs from each connection this module made. Used to enforce the order in which the module is run|list|
