@@ -7,7 +7,7 @@ locals {
   installer_name  = var.system_type == "linux" ? var.linux_installer_name : var.windows_installer_name
   installer_cmd   = var.system_type == "linux" ? "${local.tmp_path}/${var.linux_installer_name}" : "Invoke-Expression ${local.tmp_path}/${var.windows_installer_name} > ${local.tmp_path}/hab_installer.log 2>&1"
   hab_install_url = var.system_type == "linux" ? var.hab_linux_install_url : var.hab_windows_install_url
-  installer       = templatefile("${path.module}/templates/installer", {
+  installer = templatefile("${path.module}/templates/installer", {
     system          = var.system_type,
     hab_version     = var.hab_version,
     hab_install_url = local.hab_install_url,
@@ -50,7 +50,7 @@ resource "null_resource" "effortless_bootstrap" {
   }
 
   provisioner "file" {
-     content     = length(var.config) != 0 ? jsonencode(var.config) : jsonencode({"base" = "data"})
+    content     = length(var.config) != 0 ? jsonencode(var.config) : jsonencode({ "base" = "data" })
     destination = "${local.tmp_path}/dna.json"
   }
 
